@@ -10,10 +10,11 @@ import {Location} from "../../models/location";
 })
 export class AddPlacePage {
 
-  location: Location = {
+  loc: Location = {
     lat: 40.7624324,
     lng: -73.9759827
   };
+  locationIsSet = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public modalCtrl: ModalController) {
@@ -24,7 +25,15 @@ export class AddPlacePage {
   }
 
   onOpenMap() {
-    this.modalCtrl.create(SetLocationPage, {location: this.location}).present();
+    const modal = this.modalCtrl.create(SetLocationPage, {location: this.loc, isSet: this.locationIsSet});
+    modal.present();
+    modal.onDidDismiss(data => {
+      console.log(data);
+      if (data) {
+        this.loc = data.location;
+        this.locationIsSet = true;
+      }
+    });
   }
 
 }

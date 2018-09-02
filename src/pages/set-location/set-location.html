@@ -18,7 +18,7 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <button ion-button block (click)="onConfirm()">Confirm</button>
+        <button ion-button block [disabled]="!marker"  (click)="onConfirm()">Confirm</button>
       </ion-col>
       <ion-col>
         <button ion-button block color="danger" (click)="onAbort()">Abort</button>

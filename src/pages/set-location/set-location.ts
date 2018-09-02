@@ -13,11 +13,12 @@ export class SetLocationPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController) {
     this.loc = this.navParams.get('location');
+    if (this.navParams.get('isSet')) {
+      this.marker = this.loc;
+    }
   }
 
   onSetMarker(event: any) {
-    console.log(event.coords);
-    console.log(this.marker);
     this.marker = new Location(event.coords.lat, event.coords.lng);
   }
 
