@@ -1,12 +1,20 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>set-location</ion-title>
+    <ion-title>Choose Location</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <agm-map [latitude]="loc.lat" [longitude]="loc.lng" [zoom]="16" >
 
+        </agm-map>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
