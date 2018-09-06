@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import {NavController, NavParams, ViewController} from 'ionic-angular';
+import {Place} from "../../models/place";
 
 @Component({
   selector: 'page-place',
@@ -7,11 +8,18 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class PlacePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  place: Place;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl:ViewController) {
+    this.place = this.navParams.get('place');
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad PlacePage');
+  onLeave() {
+    this.viewCtrl.dismiss();
+  }
+
+  onDelete() {
+    this.onLeave();
   }
 
 }

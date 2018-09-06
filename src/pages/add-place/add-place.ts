@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {
   LoadingController,
   ModalController,
@@ -10,6 +10,8 @@ import {NgForm} from "@angular/forms";
 import {SetLocationPage} from "../set-location/set-location";
 import {Location} from "../../models/location";
 import {Camera, Geolocation} from "ionic-native";
+import {PlacesService} from "../../services/places";
+import 'rxjs';
 
 @Component({
   selector: 'page-add-place',
@@ -26,11 +28,19 @@ export class AddPlacePage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public modalCtrl: ModalController, public toastCtrl: ToastController,
-              public loadingCtrl: LoadingController) {
+              public loadingCtrl: LoadingController, private placesService: PlacesService) {
   }
 
   onSubmit(form: NgForm) {
-    console.log(form.value);
+    this.placesService.addPlace(form.value.title, form.value.description, this.loc, this.imgURL);
+    form.reset();
+    this.loc = {
+      lat: 40.7624324,
+      lng: -73.9759827
+    };
+    this.locationIsSet = false;
+    this.imgURL = '';
+    this.navCtrl.popToRoot();
   }
 
   onOpenMap() {
@@ -47,7 +57,7 @@ export class AddPlacePage {
 
   onLocate() {
     const loading = this.loadingCtrl.create({
-      content:'Getting you location ...'
+      content: 'Getting you location ...'
     });
     loading.present();
     Geolocation.getCurrentPosition()
@@ -79,7 +89,7 @@ export class AddPlacePage {
         loading.dismiss();
         this.imgURL = imgData;
       })
-      .catch( error => {
+      .catch(error => {
         console.log(error);
       });
   }
