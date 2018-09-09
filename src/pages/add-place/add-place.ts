@@ -9,9 +9,11 @@ import {
 import {NgForm} from "@angular/forms";
 import {SetLocationPage} from "../set-location/set-location";
 import {Location} from "../../models/location";
-import {Camera, Geolocation} from "ionic-native";
+import {Camera, Geolocation, File} from "ionic-native";
 import {PlacesService} from "../../services/places";
 import 'rxjs';
+
+declare var cordova: any;
 
 @Component({
   selector: 'page-add-place',
@@ -86,11 +88,36 @@ export class AddPlacePage {
       correctOrientation: true
     })
       .then(imgData => {
-        loading.dismiss();
+        const currentName = imgData.replace(/^.*[\\\/]/, '');
+        const path = imgData.replace(/[^\/]*$/, '');
+        File.moveFile(path, currentName, cordova.file.dataDirectory, currentName)
+          .then(
+            data => {
+              this.imgURL = data.nativeURL;
+              Camera.cleanup();
+              //File.removeFile(path, currentName);
+            }
+          )
+          .catch(
+            err => {
+              this.imgURL = '';
+              const toast = this.toastCtrl.create({
+                message: 'Could not save the image. Please try again!',
+                duration: 2500
+              });
+              toast.present();
+              Camera.cleanup();
+            }
+          );
         this.imgURL = imgData;
+        loading.dismiss();
       })
       .catch(error => {
-        console.log(error);
+        const toast = this.toastCtrl.create({
+          message: 'Could not take the image. Please try again!',
+          duration: 2500
+        });
+        toast.present();
       });
   }
 
