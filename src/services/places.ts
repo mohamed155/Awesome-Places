@@ -3,6 +3,9 @@ import {Place} from "../models/place";
 import {Location} from "../models/location";
 import {Injectable} from "@angular/core";
 import {LoadingController, ToastController} from "ionic-angular";
+import {File} from "ionic-native";
+
+declare var cordova: any;
 
 @Injectable()
 export class PlacesService {
@@ -37,10 +40,11 @@ export class PlacesService {
       content: 'Please wait...'
     });
     loading.present();
-    this.storage.get('places')
+    return this.storage.get('places')
       .then((places: Place[]) => {
         this.places = places != null ? places : [];
         loading.dismiss();
+        return this.places;
       })
       .catch(
         err => {
@@ -54,6 +58,28 @@ export class PlacesService {
   }
 
   deletePlace(index: number) {
+    const place = this.places[index];
     this.places.splice(index, 1);
+    this.storage.set('places', this.places)
+      .then(
+        () => {
+          this.removeFile(place);
+        }
+      )
+      .catch(
+        err => {
+          console.log(err);
+        }
+      );
+  }
+
+  private removeFile(place: Place) {
+    const currentName = place.imgURL.replace(/^.*[\\\/]/, '');
+    File.removeFile(currentName, cordova.file.dataDirectory)
+      .then(() => console.log('File removed'))
+      .catch(err => {
+        console.log('Could not remove Image File');
+        this.addPlace(place.title, place.description, place.location, place.imgURL);
+      });
   }
 }
