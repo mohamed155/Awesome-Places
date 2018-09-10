@@ -9,9 +9,8 @@ import {
 import {NgForm} from "@angular/forms";
 import {SetLocationPage} from "../set-location/set-location";
 import {Location} from "../../models/location";
-import {Camera, Geolocation, File} from "ionic-native";
+import {Camera, Geolocation, File, FilePath} from "ionic-native";
 import {PlacesService} from "../../services/places";
-import 'rxjs';
 
 declare var cordova: any;
 
@@ -30,7 +29,8 @@ export class AddPlacePage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public modalCtrl: ModalController, public toastCtrl: ToastController,
-              public loadingCtrl: LoadingController, private placesService: PlacesService) {
+              public loadingCtrl: LoadingController, private placesService: PlacesService,
+              private filePath: FilePath) {
   }
 
   onSubmit(form: NgForm) {
@@ -84,36 +84,70 @@ export class AddPlacePage {
     });
     loading.present();
     Camera.getPicture({
+      quality: 100,
+      destinationType: Camera.DestinationType.DATA_URL,
       encodingType: Camera.EncodingType.JPEG,
+      mediaType: Camera.MediaType.PICTURE,
+      allowEdit: true,
+      targetWidth: 1000,
+      targetHeight: 1000,
+      saveToPhotoAlbum: false,
       correctOrientation: true
     })
       .then(imgData => {
-        const currentName = imgData.replace(/^.*[\\\/]/, '');
-        const path = imgData.replace(/[^\/]*$/, '');
-        const newFileName = new Date().getUTCMilliseconds() + ',jpg';
-        File.moveFile(path, currentName, cordova.file.dataDirectory, newFileName)
-          .then(
-            data => {
-              this.imgURL = data.nativeURL;
-              Camera.cleanup();
-              //File.removeFile(path, currentName);
-            }
-          )
-          .catch(
-            err => {
-              this.imgURL = '';
-              const toast = this.toastCtrl.create({
-                message: 'Could not save the image. Please try again!',
-                duration: 2500
-              });
-              toast.present();
-              Camera.cleanup();
-            }
-          );
-        this.imgURL = imgData;
+        // FilePath.resolveNativePath(imgData)
+        //   .then((path) => {
+        //     console.log(imgData, path);
+        //     let imagePath = path.substr(0, path.lastIndexOf("/") + 1);
+        //     let imageName = path.substring(path.lastIndexOf("/") + 1, path.length);
+        //     File.moveFile(imagePath, imageName, cordova.file.dataDirectory,
+        //       new Date().getUTCMilliseconds() + '.jpg')
+        //       .then(newFile => {
+        //         console.log(newFile);
+        //         this.imgURL = 'data:image/jpeg;base64,' + newFile.nativeURL;
+        //       })
+        //       .catch(err => {
+        //         console.error(err);
+        //         this.imgURL = '';
+        //         const toast = this.toastCtrl.create({
+        //           message: 'Could not save the image. Please try again!',
+        //           duration: 2500
+        //         });
+        //         toast.present();
+        //         Camera.cleanup();
+        //       })
+        //   })
+        //   .catch((err) => {
+        //     console.error(err);
+        //   });
+        // const currentName = imgData.replace(/^.*[\\\/]/, '');
+        // const path = imgData.replace(/[^\/]*$/, '');
+        // const newFileName = new Date().getUTCMilliseconds() + '.jpg';
+        // File.moveFile(path, currentName, cordova.file.dataDirectory, newFileName)
+        //   .then(
+        //     data => {
+        //       this.imgURL = 'data:image/jpeg;base64,' + data.nativeURL;
+        //       Camera.cleanup();
+        //       //File.removeFile(path, currentName);
+        //     }
+        //   )
+        //   .catch(
+        //     err => {
+        //       this.imgURL = '';
+        //       const toast = this.toastCtrl.create({
+        //         message: 'Could not save the image. Please try again!',
+        //         duration: 2500
+        //       });
+        //       toast.present();
+        //       Camera.cleanup();
+        //     }
+        //   );
+        this.imgURL = 'data:image/jpeg;base64,' + imgData;
+        console.log(imgData);
         loading.dismiss();
       })
       .catch(error => {
+        loading.dismiss();
         const toast = this.toastCtrl.create({
           message: 'Could not take the image. Please try again!',
           duration: 2500

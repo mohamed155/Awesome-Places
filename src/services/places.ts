@@ -74,12 +74,18 @@ export class PlacesService {
   }
 
   private removeFile(place: Place) {
-    const currentName = place.imgURL.replace(/^.*[\\\/]/, '');
-    File.removeFile(currentName, cordova.file.dataDirectory)
-      .then(() => console.log('File removed'))
-      .catch(err => {
-        console.log('Could not remove Image File');
-        this.addPlace(place.title, place.description, place.location, place.imgURL);
-      });
+    if (place.imgURL != '') {
+      const currentName = place.imgURL.replace(/^.*[\\\/]/, '');
+      File.removeFile(currentName, cordova.file.dataDirectory)
+        .then(() => console.log('File removed'))
+        .catch(err => {
+          console.log('Could not remove Image File');
+          this.addPlace(place.title, place.description, place.location, place.imgURL);
+          this.toastCtrl.create({
+            message: 'Could not delete your place places!',
+            duration: 2500
+          }).present();
+        });
+    }
   }
 }

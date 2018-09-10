@@ -10,9 +10,8 @@ import {PlacePage} from "../pages/place/place";
 import {AddPlacePage} from "../pages/add-place/add-place";
 import {SetLocationPage} from "../pages/set-location/set-location";
 import {AgmCoreModule} from "@agm/core";
-import {Geolocation, File, Camera} from "ionic-native";
+import {Geolocation, File, Camera, FilePath} from "ionic-native";
 import {PlacesService} from "../services/places";
-import 'rxjs';
 import {IonicStorageModule} from "@ionic/storage";
 
 @NgModule({
@@ -46,10 +45,11 @@ import {IonicStorageModule} from "@ionic/storage";
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    Geolocation,
     PlacesService,
+    Geolocation,
+    Camera,
     File,
-    Camera
+    FilePath
   ]
 })
 export class AppModule {}
